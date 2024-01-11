@@ -1,7 +1,15 @@
 from django.db import models
 from django.urls import reverse
+from datetime import date
 
 # Create your models here.
+
+SIGHT = (
+    ('E', 'Early Morning'),
+    ('M', 'Midday'),
+    ('L', 'Late Afternoon')
+)
+
 
 class Finch(models.Model):
     name = models.CharField(max_length=100)
@@ -15,3 +23,24 @@ class Finch(models.Model):
     
     def get_absolute_url(self):
         return reverse('detail', kwargs={'finch_id': self.id})
+    
+    def seen_for_today(self):
+        return self.sighting_set.filter(date=date.today()).count() >= len(SIGHT)
+
+class Sighting(models.Model):
+    date = models.DateField('Sighting Date')
+    time = models.CharField(
+        max_length=1,
+        choices = SIGHT,
+        default = SIGHT[0][0]
+     )
+    
+    finch = models.ForeignKey(Finch, on_delete=models.CASCADE)
+    
+
+
+    def __str__(self):
+        return f"{self.get_sight_display()} on {self.date}"
+    
+    class Meta:
+        ordering = ['-date']
