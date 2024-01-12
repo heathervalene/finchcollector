@@ -10,6 +10,16 @@ SIGHT = (
     ('L', 'Late Afternoon')
 )
 
+class Toy(models.Model):
+    name= models.CharField(max_length=100)
+    color= models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
+    def get_absolute_url(self):
+        return reverse('toys_detail', kwargs={'pk': self.id})
+
 
 class Finch(models.Model):
     name = models.CharField(max_length=100)
@@ -17,6 +27,7 @@ class Finch(models.Model):
     habitat = models.CharField(max_length=100)
     color = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
+    toys = models.ManyToManyField(Toy)
 
     def __str__(self):
         return self.name
